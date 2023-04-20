@@ -1,0 +1,47 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model GameRoom {
+    id         String @id @default(auto()) @map("_id") @db.ObjectId
+    userCount  Int    @default(1)
+    roundCount Int    @default(0)
+    users      User[]
+}
+
+model User {
+    id           String         @id @map("_id")
+    name         String
+    gameRoom     GameRoom       @relation(fields: [gameRoomId], references: [id])
+    gameRoomId   String         @db.ObjectId
+    virusClicked Boolean?       @default(false)
+    reactionTime ReactionTime[]
+    score        Int?
+}
+
+model ReactionTime {
+    id     String  @id @default(auto()) @map("_id") @db.ObjectId
+    time   Float?
+    user   User?   @relation(fields: [userId], references: [id])
+    userId String?
+}
+
+model PreviousGame {
+    id           String   @id @default(auto()) @map("_id") @db.ObjectId
+    player1      String
+    player2      String
+    player1Score Int
+    player2Score Int
+    date         DateTime @default(now())
+}
+
+model AverageReactionTime {
+    id                  String @id @default(auto()) @map("_id") @db.ObjectId
+    name                String
+    averageReactionTime Float
+}
